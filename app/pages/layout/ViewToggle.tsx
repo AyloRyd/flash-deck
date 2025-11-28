@@ -1,20 +1,20 @@
 import { FolderOpen, Library } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import type { View } from ".";
+import { useLocation, useNavigate } from "react-router";
 
-interface ViewToggleProps {
-  view: View;
-  onViewChange: (view: View) => void;
-}
+export function ViewToggle() {
+  const location = useLocation();
+  const navigate = useNavigate();
 
-export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
+  const view = location.pathname === "/folders" ? "folders" : "sets";
+
   return (
     <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
       <Button
         variant={view === "folders" ? "default" : "ghost"}
         size="sm"
         className="gap-2"
-        onClick={() => onViewChange("folders")}
+        onClick={() => navigate("/folders")}
       >
         <FolderOpen className="h-4 w-4" />
         Folders
@@ -23,7 +23,7 @@ export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
         variant={view === "sets" ? "default" : "ghost"}
         size="sm"
         className="gap-2"
-        onClick={() => onViewChange("sets")}
+        onClick={() => navigate("/sets")}
       >
         <Library className="h-4 w-4" />
         Sets

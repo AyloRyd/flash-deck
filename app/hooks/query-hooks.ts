@@ -7,11 +7,8 @@ export const useFolders = (rootOnly?: boolean) => {
   return useQuery({
     queryKey: [...queryKeys.folders, rootOnly],
     queryFn: async () => {
-      let query = postgrest
-        .from("folders")
-        .select("*")
-        .order("folder_name");
-      
+      let query = postgrest.from("folders").select("*").order("folder_name");
+
       if (rootOnly) {
         query = query.is("parent_folder_id", null);
       }

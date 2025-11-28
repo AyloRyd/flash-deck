@@ -1,14 +1,12 @@
 import { User } from "@auth0/auth0-react";
-import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
+import { SignOutButton } from "../index/SignOutButton";
 
-interface DashboardHeaderProps {
+interface HeaderProps {
   user: User;
-  onSignOut: () => void;
 }
 
-export function DashboardHeader({ user, onSignOut }: DashboardHeaderProps) {
+export function Header({ user }: HeaderProps) {
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -28,10 +26,7 @@ export function DashboardHeader({ user, onSignOut }: DashboardHeaderProps) {
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
         </div>
-        <Button variant="ghost" size="sm" className="gap-2" onClick={onSignOut}>
-          <LogOut className="h-4 w-4" />
-          Sign Out
-        </Button>
+        <SignOutButton />
       </div>
     </header>
   );

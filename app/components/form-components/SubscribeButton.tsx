@@ -1,0 +1,23 @@
+import { Button } from "~/components/ui/button";
+import { useFormContext } from "~/hooks/use-app-form";
+
+export function SubscribeButton({
+  label,
+  className,
+  disabled,
+}: {
+  label?: string;
+  className?: string;
+  disabled?: boolean;
+}) {
+  const form = useFormContext();
+  return (
+    <form.Subscribe selector={(state) => state.isSubmitting}>
+      {(isSubmitting) => (
+        <Button type="submit" disabled={disabled ?? isSubmitting} className={className}>
+          {label ?? "Submit"}
+        </Button>
+      )}
+    </form.Subscribe>
+  );
+}

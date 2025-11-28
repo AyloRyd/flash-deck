@@ -1,0 +1,35 @@
+import { useStore } from "@tanstack/react-form";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { ErrorMessages } from "./ErrorMessages";
+import { cn } from "~/lib/utils";
+import { useFieldContext } from "~/hooks/use-app-form";
+
+export function TextField({
+  label,
+  placeholder,
+  className,
+}: {
+  label: string;
+  placeholder?: string;
+  className?: string;
+}) {
+  const field = useFieldContext<string>();
+  const errors = useStore(field.store, (state) => state.meta.errors);
+
+  return (
+    <div className={className}>
+      <Label htmlFor={label} className={cn(label !== "" && "mb-2", "text-xl font-bold")}>
+        {label}
+      </Label>
+      <Input
+        className="border-stone-400"
+        value={field.state.value}
+        placeholder={placeholder}
+        onBlur={field.handleBlur}
+        onChange={(e) => field.handleChange(e.target.value)}
+      />
+      {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
+    </div>
+  );
+}
