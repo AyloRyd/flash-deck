@@ -12,6 +12,7 @@ import "./app.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { Toaster } from "sonner";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -37,6 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Toaster position="top-center" />
         <ScrollRestoration />
         <Scripts />
       </body>
