@@ -2,8 +2,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Loader2 } from "lucide-react";
 import { useSyncUser } from "~/hooks/use-sync-user";
 import { LandingPage } from "./LandingPage";
-import { UserInfo } from "./UserInfo";
 import { LogoutButton } from "./LogoutButton";
+import { DashboardPage } from "../dashboard";
 
 export default function IndexPage() {
   const {
@@ -34,7 +34,7 @@ export default function IndexPage() {
       </div>
     );
   } else if (isAuthenticated && user) {
-    content = <UserInfo user={user} />;
+    content = <DashboardPage user={user} />;
   } else {
     content = <LandingPage />;
   }
