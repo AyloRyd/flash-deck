@@ -10,6 +10,9 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Auth0Provider } from "@auth0/auth0-react";
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -41,8 +44,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export const queryClient = new QueryClient();
+
 export default function App() {
-  return <Outlet />;
+  return (
+    <Auth0Provider
+      domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      authorizationParams={{
+        redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL,
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      }}
+    >
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
+    </Auth0Provider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
