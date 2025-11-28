@@ -2,9 +2,10 @@ import { type RouteConfig, route } from "@react-router/dev/routes";
 
 export default [
   route("", "routes/index.tsx", [
-    route("", "pages/layout/index.tsx", [
-      route("sets", "pages/sets/index.tsx", []),
-      route("folders", "pages/folders/index.tsx", []),
+    route("", "routes/layout.tsx", [
+      route("sets", "routes/sets/index.tsx"),
+      route("folders", "routes/folders/index.tsx"),
     ]),
+    route("folders/:folderId", "routes/folders/folderId.tsx"),
   ]),
 ] satisfies RouteConfig;

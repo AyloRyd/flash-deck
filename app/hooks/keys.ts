@@ -1,5 +1,7 @@
 export const queryKeys = {
   folders: ["folders"] as const,
+  folder: (id: number) => ["folders", id] as const, 
+  folderContents: (id: number) => ["folder-contents", id] as const,
   sets: (folderId?: number) =>
     folderId ? ["sets", folderId] : (["sets"] as const),
   set: (setId: number) => ["sets", setId] as const,

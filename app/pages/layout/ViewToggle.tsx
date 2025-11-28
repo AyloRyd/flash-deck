@@ -6,7 +6,7 @@ export function ViewToggle() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const view = location.pathname === "/folders" ? "folders" : "sets";
+  const view = location.pathname.startsWith("/folders") ? "folders" : "sets";
 
   return (
     <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">

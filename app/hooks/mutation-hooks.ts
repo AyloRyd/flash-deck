@@ -19,8 +19,14 @@ export const useCreateFolder = () => {
       if (error) throw new Error(error.message);
       return data as Folder;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.folders });
+
+      if (data.parent_folder_id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.folderContents(data.parent_folder_id),
+        });
+      }
     },
   });
 };
@@ -42,31 +48,37 @@ export const useUpdateFolder = () => {
         .eq("folder_id", folderId)
         .select()
         .single();
-
       if (error) throw new Error(error.message);
       return data as Folder;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.folders });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.folder(data.folder_id),
+      });
+
+      if (data.parent_folder_id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.folderContents(data.parent_folder_id),
+        });
+      }
     },
   });
 };
 
 export const useDeleteFolder = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (folderId: number) => {
       const { error } = await postgrest
         .from("folders")
         .delete()
         .eq("folder_id", folderId);
-
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.folders });
-      queryClient.invalidateQueries({ queryKey: ["sets"] });
+      queryClient.invalidateQueries({ queryKey: ["folder-contents"] });
     },
   });
 };
@@ -83,12 +95,18 @@ export const useCreateSet = () => {
         .insert(set)
         .select()
         .single();
-
       if (error) throw new Error(error.message);
       return data as Set;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["sets"] });
+
+      if (data.folder_id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.folderContents(data.folder_id),
+        });
+      }
+
       if (data.is_public) {
         queryClient.invalidateQueries({ queryKey: queryKeys.publicSets });
       }
@@ -121,28 +139,26 @@ export const useUpdateSet = () => {
       queryClient.invalidateQueries({ queryKey: ["sets"] });
       queryClient.invalidateQueries({ queryKey: queryKeys.set(data.set_id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.publicSets });
+      queryClient.invalidateQueries({ queryKey: ["folder-contents"] });
     },
   });
 };
 
 export const useDeleteSet = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (setId: number) => {
       const { error } = await postgrest
         .from("sets")
         .delete()
         .eq("set_id", setId);
-
       if (error) throw new Error(error.message);
     },
     onSuccess: (_, setId) => {
       queryClient.invalidateQueries({ queryKey: ["sets"] });
       queryClient.invalidateQueries({ queryKey: queryKeys.set(setId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.cards(setId) });
+      queryClient.invalidateQueries({ queryKey: ["folder-contents"] });
       queryClient.invalidateQueries({ queryKey: queryKeys.publicSets });
-      queryClient.invalidateQueries({ queryKey: ["progress"] });
     },
   });
 };

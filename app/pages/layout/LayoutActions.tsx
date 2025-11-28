@@ -25,7 +25,6 @@ export function LayoutActions() {
     <div className="flex flex-wrap gap-2">
       <Button
         variant="outline"
-        size="sm"
         className="gap-2"
         onClick={() => {
           populateGerman.mutate();
@@ -34,11 +33,10 @@ export function LayoutActions() {
         disabled={isLoading}
       >
         <Database className="h-4 w-4" />
-        Seed sets [dev]
+        Seed [dev]
       </Button>
       <Button
         variant="outline"
-        size="sm"
         className="gap-2 text-destructive hover:bg-destructive/10"
         onClick={() => {
           if (
@@ -52,12 +50,12 @@ export function LayoutActions() {
         disabled={isLoading}
       >
         <Trash2 className="h-4 w-4" />
-        Clear all data [dev]
+        Clear [dev]
       </Button>
-      {location.pathname === "/sets" && (
+      {location.pathname.startsWith("/sets") && (
         <SetDialog
           trigger={
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" className="gap-2">
               <Plus className="h-4 w-4" />
               Create new set
             </Button>
@@ -65,10 +63,10 @@ export function LayoutActions() {
           mode="create"
         />
       )}
-      {location.pathname === "/folders" && (
+      {location.pathname.startsWith("/folders") && (
         <FolderDialog
           trigger={
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" className="gap-2">
               <Plus className="h-4 w-4" />
               Create new folder
             </Button>

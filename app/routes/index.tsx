@@ -2,7 +2,7 @@ import type { Route } from "./+types/index";
 import IndexPage from "~/pages/index";
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "FlashDeck" }];
+  return [{ title: "FlashDeck | Master your knowledge" }];
 }
 
 export default function Index() {

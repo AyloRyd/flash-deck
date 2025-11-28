@@ -1,13 +1,48 @@
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { postgrest } from "~/lib/postgrest";
 import { queryKeys } from "./keys";
 import type { Folder, Set, Card, Progress } from "~/lib/types";
+
+export const folderQueryOptions = (folderId: number) =>
+  queryOptions({
+    queryKey: queryKeys.folder(folderId),
+    queryFn: async () => {
+      const { data, error } = await postgrest
+        .from("folders")
+        .select("*")
+        .eq("folder_id", folderId)
+        .single();
+      if (error) throw new Error(error.message);
+      return data as Folder;
+    },
+    enabled: !!folderId,
+  });
+
+export const useFolder = (folderId: number | null) => {
+  return useQuery({
+    ...folderQueryOptions(folderId!),
+  });
+};
+
+export interface FolderExtended extends Folder {
+  sets_count: number;
+  subfolders_count: number;
+}
 
 export const useFolders = (rootOnly?: boolean) => {
   return useQuery({
     queryKey: [...queryKeys.folders, rootOnly],
     queryFn: async () => {
-      let query = postgrest.from("folders").select("*").order("folder_name");
+      let query = postgrest
+        .from("folders")
+        .select(
+          `
+          *,
+          sets(count),
+          folders!parent_folder_id(count)
+        `
+        )
+        .order("folder_name");
 
       if (rootOnly) {
         query = query.is("parent_folder_id", null);
@@ -15,24 +50,48 @@ export const useFolders = (rootOnly?: boolean) => {
 
       const { data, error } = await query;
       if (error) throw new Error(error.message);
-      return data as Folder[];
+
+      return data.map((item: any) => ({
+        ...item,
+        sets_count: item.sets[0].count,
+        subfolders_count: item.folders[0].count,
+      })) as FolderExtended[];
     },
   });
 };
 
-export const useFolder = (folderId: number | null) => {
+export const useFolderContents = (folderId: number) => {
   return useQuery({
-    queryKey: queryKeys.set(folderId!),
+    queryKey: queryKeys.folderContents(folderId),
     queryFn: async () => {
-      const { data, error } = await postgrest
-        .from("folders")
-        .select("*")
-        .eq("folder_id", folderId!)
-        .single();
-      if (error) throw new Error(error.message);
-      return data as Folder;
+      const [foldersResult, setsResult] = await Promise.all([
+        postgrest
+          .from("folders")
+          .select(`*, sets(count), folders!parent_folder_id(count)`)
+          .eq("parent_folder_id", folderId)
+          .order("folder_name"),
+        postgrest
+          .from("sets")
+          .select("*")
+          .eq("folder_id", folderId)
+          .order("set_name"),
+      ]);
+
+      if (foldersResult.error) throw new Error(foldersResult.error.message);
+      if (setsResult.error) throw new Error(setsResult.error.message);
+
+      const folders = foldersResult.data.map((item: any) => ({
+        ...item,
+        sets_count: item.sets[0].count,
+        subfolders_count: item.folders[0].count,
+      })) as FolderExtended[];
+
+      return {
+        folders,
+        sets: setsResult.data as Set[],
+      };
     },
-    enabled: folderId !== null,
+    enabled: !!folderId,
   });
 };
 

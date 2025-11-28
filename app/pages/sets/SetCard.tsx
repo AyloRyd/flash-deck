@@ -4,12 +4,14 @@ import { Badge } from "~/components/ui/badge";
 import { useCards, useFolder } from "~/hooks/query-hooks";
 import { SetCardOptions } from "../sets/SetCardOptions";
 import type { Set } from "~/lib/types";
+import { cn } from "~/lib/utils";
 
 interface SetCardProps {
   set: Set;
+  showFolderName?: boolean;
 }
 
-export function SetCard({ set }: SetCardProps) {
+export function SetCard({ set, showFolderName }: SetCardProps) {
   const {
     data: folder,
     error: folderError,
@@ -44,13 +46,13 @@ export function SetCard({ set }: SetCardProps) {
         )}
       </CardHeader>
       <CardContent>
-        <div className="mb-4">
+        <div className={cn(showFolderName ? "mb-4" : "mb-0")}>
           {cardsIsLoading ? (
             "Loading cards..."
           ) : cardsError ? (
             "Error loading cards"
           ) : (
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               {cards?.length ?? 0} term{(cards?.length ?? 0) !== 1 ? "s" : ""}
             </div>
           )}
@@ -58,17 +60,19 @@ export function SetCard({ set }: SetCardProps) {
         <div className="flex w-full justify-between items-center">
           <div className="flex flex-col">
             <div className="text-xs text-muted-foreground">
-              {folderError
-                ? set.folder_id
-                  ? "In folder"
-                  : "No folder"
-                : folderIsLoading
-                  ? "Loading folder..."
-                  : folder
-                    ? folder.folder_name
-                    : "No folder"}
+              {showFolderName
+                ? folderError
+                  ? set.folder_id
+                    ? "In folder"
+                    : "No folder"
+                  : folderIsLoading
+                    ? "Loading folder..."
+                    : folder
+                      ? folder.folder_name
+                      : "No folder"
+                : null}
             </div>
-            <div className="mt-1 text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               Created: {new Date(set.creation_date).toLocaleDateString()}
             </div>
           </div>
