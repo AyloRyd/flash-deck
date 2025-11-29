@@ -1,6 +1,7 @@
 import { useSets } from "~/hooks/query-hooks";
 import { SetCard } from "./SetCard";
 import { Card, CardHeader, CardContent } from "~/components/ui/card";
+import { Link } from "react-router";
 
 export default function SetsGrid() {
   const { data: sets, isLoading, error } = useSets();
@@ -34,7 +35,9 @@ export default function SetsGrid() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {sets.map((set) => (
-        <SetCard key={set.set_id} set={set} />
+        <Link to={`/sets/${set.set_id}`} key={set.set_id}>
+          <SetCard set={set} />
+        </Link>
       ))}
     </div>
   );

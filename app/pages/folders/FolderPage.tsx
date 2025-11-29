@@ -66,8 +66,8 @@ export default function FolderPage() {
 
             {sets.map((set) => (
               <Link
-                key={set.folder_id}
-                to={`/sets/${set.folder_id}`}
+                key={set.set_id}
+                to={`/sets/${set.set_id}`}
                 className="block"
               >
                 <SetCard set={set} showFolderName={false} />

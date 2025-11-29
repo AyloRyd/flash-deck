@@ -11,6 +11,22 @@ const folderSchema = z.object({
     .max(100, "Name too long"),
 });
 
+type FolderSchema = z.infer<typeof folderSchema>;
+
+const validate = (value: FolderSchema) => {
+  const errors: { fields: Record<string, string> } = { fields: {} };
+  const result = folderSchema.safeParse(value);
+  if (!result.success) {
+    for (const issue of result.error.issues) {
+      const field = issue.path[0] as string;
+      if (!errors.fields[field]) {
+        errors.fields[field] = issue.message;
+      }
+    }
+    return errors;
+  }
+};
+
 export function useFolderForm({
   mode,
   folderId,
@@ -27,20 +43,10 @@ export function useFolderForm({
       folder_name: initialData?.folder_name || "",
     },
     validators: {
-      onBlur: ({ value }) => {
-        const errors: { fields: Record<string, string> } = { fields: {} };
-        const result = folderSchema.safeParse(value);
-        if (!result.success) {
-          for (const issue of result.error.issues) {
-            const field = issue.path[0] as string;
-            if (!errors.fields[field]) {
-              errors.fields[field] = issue.message;
-            }
-          }
-        }
-        return errors;
-      },
+      onBlur: ({ value }) => validate(value),
       onSubmit: async ({ value }) => {
+        if (validate(value)) return;
+
         const payload = {
           folder_name: value.folder_name,
         };
@@ -56,7 +62,10 @@ export function useFolderForm({
                 toast.success("Folder created");
                 onClose();
               },
-              onError: () => toast.error("Failed to create folder"),
+              onError: (error) =>
+                toast.error(
+                  `Failed to create folder: ${error.message || "internal server error"}`
+                ),
             }
           );
         } else if (mode === "update" && folderId) {
@@ -70,10 +79,15 @@ export function useFolderForm({
                 toast.success("Folder updated");
                 onClose();
               },
-              onError: () => toast.error("Failed to update folder"),
+              onError: (error) =>
+                toast.error(
+                  `Failed to update folder: ${error.message || "internal server error."}`
+                ),
             }
           );
         }
+
+        return null;
       },
     },
   });

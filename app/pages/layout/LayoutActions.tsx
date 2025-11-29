@@ -1,4 +1,4 @@
-import { Trash2, BookOpen, Languages, Plus, Database } from "lucide-react";
+import { Trash2, Database, Library, FolderOpen } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   usePopulateGermanCourse,
@@ -55,9 +55,9 @@ export function LayoutActions() {
       {location.pathname.startsWith("/sets") && (
         <SetDialog
           trigger={
-            <Button variant="outline" className="gap-2">
-              <Plus className="h-4 w-4" />
-              Create new set
+            <Button className="gap-2">
+              <Library className="h-4 w-4" />
+              New set
             </Button>
           }
           mode="create"
@@ -66,9 +66,9 @@ export function LayoutActions() {
       {location.pathname.startsWith("/folders") && (
         <FolderDialog
           trigger={
-            <Button variant="outline" className="gap-2">
-              <Plus className="h-4 w-4" />
-              Create new folder
+            <Button className="gap-2">
+              <FolderOpen className="h-4 w-4" />
+              New folder
             </Button>
           }
           mode="create"

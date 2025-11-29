@@ -16,7 +16,7 @@ export default function FolderId() {
     title: folder?.folder_name,
     isLoading,
     isError,
-    errorTitle: "Folder Not Found | FlashDeck" 
+    errorTitle: "Folder not found | FlashDeck" 
   });
 
   return <FolderPage />;

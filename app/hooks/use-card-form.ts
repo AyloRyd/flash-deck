@@ -1,19 +1,19 @@
 import { toast } from "sonner";
 import { z } from "zod";
 import { useAppForm } from "~/hooks/use-app-form";
-import { useCreateSet, useUpdateSet } from "./mutation-hooks";
-import type { SetFormProps } from "~/pages/sets/SetForm";
+import { useCreateCard, useUpdateCard } from "./mutation-hooks"; 
+import type { CardFormProps } from "~/pages/cards/CardForm";
 
-const setSchema = z.object({
-  set_name: z.string().min(1, "Set name is required").max(100, "Name too long"),
-  is_public: z.enum(["true", "false"]),
+const cardSchema = z.object({
+  front_text: z.string().min(1, "Front side is required").max(1000, "Text too long"),
+  back_text: z.string().min(1, "Back side is required").max(1000, "Text too long"),
 });
 
-type SetSchema = z.infer<typeof setSchema>;
+type CardSchema = z.infer<typeof cardSchema>;
 
-const validate = (value: SetSchema) => {
+const validate = (value: CardSchema) => {
   const errors: { fields: Record<string, string> } = { fields: {} };
-  const result = setSchema.safeParse(value);
+  const result = cardSchema.safeParse(value);
 
   if (!result.success) {
     for (const issue of result.error.issues) {
@@ -26,23 +26,21 @@ const validate = (value: SetSchema) => {
   }
 };
 
-export function useSetForm({
+export function useCardForm({
   mode,
-  setId,
+  cardId,
   initialData,
-  folderId,
+  setId,
   onClose,
-}: SetFormProps) {
-  const { mutate: createSet, isPending: isCreating } = useCreateSet();
-  const { mutate: updateSet, isPending: isUpdating } = useUpdateSet();
+}: CardFormProps) {
+  const { mutate: createCard, isPending: isCreating } = useCreateCard();
+  const { mutate: updateCard, isPending: isUpdating } = useUpdateCard();
   const isPending = isCreating || isUpdating;
 
   const form = useAppForm({
     defaultValues: {
-      set_name: initialData?.set_name || "",
-      is_public: (initialData?.is_public ? "true" : "false") as
-        | "true"
-        | "false",
+      front_text: initialData?.front_text || "",
+      back_text: initialData?.back_text || "",
     },
     validators: {
       onBlur: ({ value }) => validate(value),
@@ -50,41 +48,46 @@ export function useSetForm({
         if (validate(value)) return;
 
         const payload = {
-          set_name: value.set_name,
-          is_public: value.is_public === "true",
+          front_text: value.front_text,
+          back_text: value.back_text,
         };
 
         if (mode === "create") {
-          createSet(
+          if (!setId) {
+            toast.error("Set ID is missing");
+            return;
+          }
+
+          createCard(
             {
               ...payload,
-              folder_id: folderId ?? null,
+              set_id: setId,
             },
             {
               onSuccess: () => {
-                toast.success("Set created");
+                toast.success("Card created");
                 onClose();
               },
               onError: (error) =>
                 toast.error(
-                  `Failed to create set: ${error.message || "internal server error"}`
+                  `Failed to create card: ${error.message || "internal server error"}`
                 ),
             }
           );
-        } else if (mode === "update" && setId) {
-          updateSet(
+        } else if (mode === "update" && cardId) {
+          updateCard(
             {
-              setId,
+              cardId,
               updates: payload,
             },
             {
               onSuccess: () => {
-                toast.success("Set updated");
+                toast.success("Card updated");
                 onClose();
               },
               onError: (error) =>
                 toast.error(
-                  `Failed to update set: ${error.message || "internal server error"}`
+                  `Failed to update card: ${error.message || "internal server error"}`
                 ),
             }
           );

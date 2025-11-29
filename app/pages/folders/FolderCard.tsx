@@ -1,4 +1,4 @@
-import { Folder, FolderOpen, Layers, Library } from "lucide-react";
+import { Folder, FolderOpen, Library } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { FolderCardOptions } from "./FolderCardOptions";
 import type { FolderExtended } from "~/hooks/query-hooks";
@@ -6,6 +6,17 @@ import type { FolderExtended } from "~/hooks/query-hooks";
 interface FolderCardProps {
   folder: FolderExtended;
 }
+
+const CountDisplay = ({ folder }: { folder: FolderExtended }) => (
+  <span className="flex items-center gap-1">
+    <Folder className="h-3 w-3" />
+    {folder.subfolders_count || 0}{" "}
+    {folder.subfolders_count === 1 ? "folder" : "folders"}
+    <span>•</span>
+    <Library className="h-3 w-3" />
+    {folder.sets_count || 0} {folder.sets_count === 1 ? "set" : "sets"}
+  </span>
+);
 
 export function FolderCard({ folder }: FolderCardProps) {
   return (
@@ -22,21 +33,15 @@ export function FolderCard({ folder }: FolderCardProps) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col">
-          <span className="text-xs text-muted-foreground">
-            In folder root level:
+          <span className="text-xs text-muted-foreground md:hidden">
+            <CountDisplay folder={folder} />
           </span>
           <div className="flex w-full justify-between items-center">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Folder className="h-3 w-3" />
-                {folder.subfolders_count || 0}{" "}
-                {folder.subfolders_count === 1 ? "folder" : "folders"}
-                <span>•</span>
-                <Library className="h-3 w-3" />
-                {folder.sets_count || 0}{" "}
-                {folder.sets_count === 1 ? "set" : "sets"}
+              <span className="hidden md:flex">
+                <CountDisplay folder={folder} />
               </span>
-              <span>•</span>
+              <span className="hidden md:block">•</span>
               <span>{new Date(folder.updated_at).toLocaleDateString()}</span>
             </div>
             <FolderCardOptions folder={folder} />

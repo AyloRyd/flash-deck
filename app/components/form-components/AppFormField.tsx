@@ -27,7 +27,7 @@ export function AppFormField({
     <form.AppField name={name}>
       {(field: any) => (
         <div className="space-y-1">
-          <Label htmlFor={field.name} className="text-dracula-foreground">
+          <Label htmlFor={field.name}>
             {label}
           </Label>
           
@@ -38,7 +38,7 @@ export function AppFormField({
               value={field.state.value || ""}
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
-              className={`bg-dracula-current-line border-dracula-selection text-dracula-foreground resize-none ${className || ""}`}
+              className={`resize-none ${className || ""}`}
               placeholder={placeholder}
               disabled={disabled}
             />
@@ -50,14 +50,14 @@ export function AppFormField({
               value={field.state.value || ""}
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
-              className={`bg-dracula-current-line border-dracula-selection text-dracula-foreground ${className || ""}`}
+              className={className || ""}
               placeholder={placeholder}
               disabled={disabled}
             />
           )}
 
           {field.state.meta.errors.length > 0 && (
-            <p className="text-dracula-red text-xs">
+            <p className="text-red-500 text-xs">
               {field.state.meta.errors[0]}
             </p>
           )}
