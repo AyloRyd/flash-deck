@@ -1,5 +1,6 @@
 import { Button } from "~/components/ui/button";
 import { useSetForm } from "~/hooks/use-set-form";
+import { useFolders } from "~/hooks/query-hooks";
 import type { Set } from "~/lib/types";
 import { AppFormField } from "~/components/form-components/AppFormField";
 import { Select } from "~/components/form-components/Select";
@@ -27,6 +28,16 @@ export default function SetForm({
     onClose,
   });
 
+  const { data: folders, isLoading: isFoldersLoading } = useFolders();
+
+  const folderOptions = [
+    { value: "root", label: "No folder" },
+    ...(folders || []).map((folder) => ({
+      value: folder.folder_id.toString(),
+      label: folder.folder_name,
+    })),
+  ];
+
   return (
     <form
       onSubmit={(e) => {
@@ -40,8 +51,20 @@ export default function SetForm({
         form={form}
         name="set_name"
         label="Set name"
-        placeholder="e.g. English verbs [B2]"
+        placeholder="e.g. French Vocabulary"
       />
+
+      <form.AppField name="folder_id">
+        {() => (
+          <Select
+            label="Parent folder"
+            values={folderOptions}
+            placeholder={
+              isFoldersLoading ? "Loading folders..." : "Select folder"
+            }
+          />
+        )}
+      </form.AppField>
 
       <form.AppField name="is_public">
         {() => (
@@ -57,11 +80,7 @@ export default function SetForm({
       </form.AppField>
 
       <div className="flex justify-end gap-3 mt-6">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onClose}
-        >
+        <Button type="button" variant="ghost" onClick={onClose}>
           Cancel
         </Button>
         <Button
@@ -75,8 +94,8 @@ export default function SetForm({
               ? "Creating..."
               : "Updating..."
             : mode === "create"
-            ? "Create Set"
-            : "Save changes"}
+              ? "Create Set"
+              : "Save changes"}
         </Button>
       </div>
     </form>

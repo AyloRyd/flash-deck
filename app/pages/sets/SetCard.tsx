@@ -53,7 +53,7 @@ export function SetCard({ set, showFolderName }: SetCardProps) {
             "Error loading cards"
           ) : (
             <div className="text-xs text-muted-foreground">
-              {cards?.length ?? 0} term{(cards?.length ?? 0) !== 1 ? "s" : ""}
+              {cards?.length ?? 0} card{(cards?.length ?? 0) !== 1 ? "s" : ""}
             </div>
           )}
         </div>

@@ -7,6 +7,7 @@ import type { SetFormProps } from "~/pages/sets/SetForm";
 const setSchema = z.object({
   set_name: z.string().min(1, "Set name is required").max(100, "Name too long"),
   is_public: z.enum(["true", "false"]),
+  folder_id: z.string(),
 });
 
 type SetSchema = z.infer<typeof setSchema>;
@@ -43,6 +44,7 @@ export function useSetForm({
       is_public: (initialData?.is_public ? "true" : "false") as
         | "true"
         | "false",
+      folder_id: initialData?.folder_id?.toString() || folderId?.toString() || "root",
     },
     validators: {
       onBlur: ({ value }) => validate(value),
@@ -52,14 +54,12 @@ export function useSetForm({
         const payload = {
           set_name: value.set_name,
           is_public: value.is_public === "true",
+          folder_id: value.folder_id === "root" ? null : parseInt(value.folder_id, 10),
         };
 
         if (mode === "create") {
           createSet(
-            {
-              ...payload,
-              folder_id: folderId ?? null,
-            },
+            payload,
             {
               onSuccess: () => {
                 toast.success("Set created");
