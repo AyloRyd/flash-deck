@@ -3,8 +3,8 @@ import { Loader2 } from "lucide-react";
 import { useSyncUser } from "~/hooks/use-sync-user";
 import { LandingPage } from "./LandingPage";
 import { SignOutButton } from "./SignOutButton";
-import { Header } from "../layout/Header";
 import { Outlet } from "react-router";
+import { Header } from "./Header";
 
 export default function IndexPage() {
   const {

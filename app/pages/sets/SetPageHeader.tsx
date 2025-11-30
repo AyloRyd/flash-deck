@@ -6,7 +6,7 @@ import SetDialog from "./SetDialog";
 interface SetPageHeaderProps {
   currentSet: Set;
   cardsCount: number;
-  masteryPercentage: number | null;
+  masteryPercentage: string;
 }
 
 export function SetPageHeader({
@@ -16,10 +16,12 @@ export function SetPageHeader({
 }: SetPageHeaderProps) {
   return (
     <header className="space-y-6">
-      <div className="flex flex-col justify-center items-center gap-6">
-        <div className="flex flex-col md:flex-row items-center space-x-3 space-y-3">
-          <Library className="w-10 h-10 text-primary" />
-          <h1 className="text-2xl font-bold text-center">{currentSet.set_name}</h1>
+      <div className="flex flex-col justify-center items-center gap-6 px-4">
+        <div className="flex items-center gap-3 min-w-0 max-w-full">
+          <Library className="w-6 h-6 md:w-10 md:h-10 text-primary shrink-0" />
+          <h1 className="text-md md:text-xl font-bold text-center truncate">
+            {currentSet.set_name}
+          </h1>
         </div>
         <SetDialog
           mode="update"
@@ -43,10 +45,7 @@ export function SetPageHeader({
         <div className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4" />
           <span>
-            Mastery:{" "}
-            {masteryPercentage !== null
-              ? `${Math.round(masteryPercentage)}%`
-              : "..."}
+            Mastery: {masteryPercentage}
           </span>
         </div>
       </div>

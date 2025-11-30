@@ -1,5 +1,6 @@
 import { Button } from "~/components/ui/button";
 import { BookOpen, Brain } from "lucide-react";
+import { useNavigate } from "react-router";
 
 interface StudyOptionsProps {
   setId: number;
@@ -7,6 +8,8 @@ interface StudyOptionsProps {
 }
 
 export function StudyOptions({ setId, cardsCount }: StudyOptionsProps) {
+  const navigate = useNavigate();
+
   if (cardsCount === 0) {
     return null;
   }
@@ -17,8 +20,7 @@ export function StudyOptions({ setId, cardsCount }: StudyOptionsProps) {
         size="lg" 
         className="h-20 text-lg rounded-2xl"
         onClick={() => {
-          // TODO: Navigate to study mode with all cards
-          console.log('Study all cards:', setId);
+          navigate(`/sets/${setId}/study?mode=default`);
         }}
       >
         <BookOpen className="w-5 h-5 mr-2" />
@@ -30,8 +32,7 @@ export function StudyOptions({ setId, cardsCount }: StudyOptionsProps) {
         variant="secondary"
         className="h-20 text-lg rounded-2xl"
         onClick={() => {
-          // TODO: Navigate to study mode with study queue
-          console.log('Study queue:', setId);
+          navigate(`/sets/${setId}/study?mode=smart`);
         }}
       >
         <Brain className="w-5 h-5 mr-2" />

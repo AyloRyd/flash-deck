@@ -9,4 +9,5 @@ export default [
     route("folders/:folderId", "routes/folders/folderId.tsx"),
     route("sets/:setId", "routes/sets/setId.tsx"),
   ]),
+  route("sets/:setId/study", "routes/sets/setId-study.tsx"),
 ] satisfies RouteConfig;

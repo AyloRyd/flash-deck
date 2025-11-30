@@ -201,12 +201,14 @@ export const useSetMastery = (setId: number) => {
   return useQuery({
     queryKey: queryKeys.setMastery(setId),
     queryFn: async () => {
-      const { data, error } = await postgrest.rpc("set_mastery", {
-        p_set: setId,
-      });
+      const { data, error } = await postgrest
+        .from("sets")
+        .select("set_mastery")
+        .eq("set_id", setId)
+        .single();
 
       if (error) throw new Error(error.message);
-      return data as number;
+      return data.set_mastery as number;
     },
     enabled: !!setId,
   });
@@ -216,12 +218,14 @@ export const useCardStatus = (cardId: number) => {
   return useQuery({
     queryKey: queryKeys.cardStatus(cardId),
     queryFn: async () => {
-      const { data, error } = await postgrest.rpc("card_status", {
-        p_card: cardId,
-      });
+      const { data, error } = await postgrest
+        .from("cards")
+        .select("card_status")
+        .eq("card_id", cardId)
+        .single();
 
       if (error) throw new Error(error.message);
-      return data as string;
+      return data.card_status as string;
     },
     enabled: !!cardId,
   });

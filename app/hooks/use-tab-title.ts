@@ -16,9 +16,13 @@ export function useTabTitle({
   isError,
   errorTitle,
 }: UseTabTitleParams) {
-  const originalTitle = useRef(document.title);
+  const originalTitle = useRef(typeof document !== "undefined" ? document.title : "");
 
   useEffect(() => {
+    if (!originalTitle.current) {
+        originalTitle.current = document.title;
+    }
+
     if (isLoading) {
       document.title = LOADING_TITLE;
     } 
@@ -33,7 +37,9 @@ export function useTabTitle({
     }
 
     return () => {
-      document.title = originalTitle.current;
+      if (typeof document !== "undefined") {
+        document.title = originalTitle.current;
+      }
     };
   }, [title, isLoading, isError, errorTitle]);
 }

@@ -27,6 +27,10 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export function meta({}: Route.MetaArgs) {
+  return [{ title: "FlashDeck | Master your knowledge" }];
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -46,7 +50,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App() {
   return (

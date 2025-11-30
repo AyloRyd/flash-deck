@@ -24,6 +24,7 @@ export default function SetPage() {
   const {
     data: masteryPercentage,
     isLoading: isMasteryLoading,
+    isError: setMasteryError,
   } = useSetMastery(setIdNumber);
 
   if (setError) {
@@ -51,17 +52,23 @@ export default function SetPage() {
   }
 
   const cardsCount = cards?.length ?? 0;
-  const mastery = isMasteryLoading ? null : masteryPercentage ?? 0;
+  const mastery = setMasteryError
+    ? "unable to define"
+    : isMasteryLoading
+      ? "..."
+      : masteryPercentage
+        ? `${Math.round(masteryPercentage)}%`
+        : "0%";
 
   return (
     <main className="container mx-auto px-4 py-6 space-y-6">
       <div className="flex flex-col space-y-6">
-        <SetPageHeader 
-          currentSet={currentSet} 
+        <SetPageHeader
+          currentSet={currentSet}
           cardsCount={cardsCount}
           masteryPercentage={mastery}
         />
-        
+
         <StudyOptions setId={setIdNumber} cardsCount={cardsCount} />
 
         {isCardsLoading ? (

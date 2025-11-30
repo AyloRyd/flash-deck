@@ -10,15 +10,15 @@ interface FolderPageHeaderProps {
 
 export function FolderPageHeader({ currentFolder }: FolderPageHeaderProps) {
   return (
-    <header className="flex flex-col lg:flex-row justify-between items-center pb-4 mb-4 space-y-3">
-      <div className="flex flex-col gap-3 items-center space-x-3 md:flex-row">
-        <FolderOpen className="md:block w-8 h-8 text-primary" />
-        <h1 className="text-xl text-center md:text-start font-bold">
+    <header className="flex flex-col lg:flex-row justify-between items-center pb-4 mb-4 gap-3">
+      <div className="flex gap-3 items-center min-w-0 w-full lg:w-auto">
+        <FolderOpen className="w-6 h-6 md:w-8 md:h-8 text-primary shrink-0" />
+        <h1 className="text-md md:text-xl text-center md:text-start font-bold truncate max-w-full">
           {currentFolder.folder_name}
         </h1>
       </div>
 
-      <div className="flex flex-col items-center sm:flex-row space-x-3 gap-3">
+      <div className="flex flex-col items-center sm:flex-row space-x-0 sm:space-x-3 gap-2 shrink-0">
         <FolderDialog
           mode="update"
           folder={currentFolder}
@@ -29,25 +29,27 @@ export function FolderPageHeader({ currentFolder }: FolderPageHeaderProps) {
           }
         />
 
-        <FolderDialog
-          mode="create"
-          parentFolderId={currentFolder.folder_id}
-          trigger={
-            <Button className="m-0 flex items-center gap-2">
-              <FolderOpen className="w-4 h-4" /> New folder
-            </Button>
-          }
-        />
+        <div className="flex gap-2 justify-between">
+          <FolderDialog
+            mode="create"
+            parentFolderId={currentFolder.folder_id}
+            trigger={
+              <Button className="m-0 flex items-center gap-2">
+                <FolderOpen className="w-4 h-4" /> New folder
+              </Button>
+            }
+          />
 
-        <SetDialog
-          mode="create"
-          folderId={currentFolder.folder_id}
-          trigger={
-            <Button className="m-0 flex items-center gap-2">
-              <Library className="w-4 h-4" /> New set
-            </Button>
-          }
-        />
+          <SetDialog
+            mode="create"
+            folderId={currentFolder.folder_id}
+            trigger={
+              <Button className="m-0 flex items-center gap-2">
+                <Library className="w-4 h-4" /> New set
+              </Button>
+            }
+          />
+        </div>
       </div>
     </header>
   );
