@@ -64,7 +64,7 @@ export function useFolderForm({
               },
               onError: (error) =>
                 toast.error(
-                  `Failed to create folder: ${error.message || "internal server error"}`
+                  `Failed to create folder. ${error.message || "Internal server error."}`
                 ),
             }
           );
@@ -81,7 +81,7 @@ export function useFolderForm({
               },
               onError: (error) =>
                 toast.error(
-                  `Failed to update folder: ${error.message || "internal server error."}`
+                  `Failed to update folder. ${error.message || "Internal server error."}`
                 ),
             }
           );

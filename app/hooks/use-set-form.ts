@@ -3,6 +3,7 @@ import { z } from "zod";
 import { useAppForm } from "~/hooks/use-app-form";
 import { useCreateSet, useUpdateSet } from "./mutation-hooks";
 import type { SetFormProps } from "~/pages/sets/SetForm";
+import type { PgRError } from "~/lib/postgrest";
 
 const setSchema = z.object({
   set_name: z.string().min(1, "Set name is required").max(100, "Name too long"),
@@ -38,13 +39,26 @@ export function useSetForm({
   const { mutate: updateSet, isPending: isUpdating } = useUpdateSet();
   const isPending = isCreating || isUpdating;
 
+  const handleError = (value: SetSchema, error: PgRError) => {
+    if (error.code === "409") {
+      toast.error(
+        `A set with the name "${value.set_name}" already exists. Please choose a different name.`
+      );
+    } else {
+      toast.error(
+        `Failed to save set. ${error.message || "Internal server error."}`
+      );
+    }
+  };
+
   const form = useAppForm({
     defaultValues: {
       set_name: initialData?.set_name || "",
       is_public: (initialData?.is_public ? "true" : "false") as
         | "true"
         | "false",
-      folder_id: initialData?.folder_id?.toString() || folderId?.toString() || "root",
+      folder_id:
+        initialData?.folder_id?.toString() || folderId?.toString() || "root",
     },
     validators: {
       onBlur: ({ value }) => validate(value),
@@ -54,23 +68,18 @@ export function useSetForm({
         const payload = {
           set_name: value.set_name,
           is_public: value.is_public === "true",
-          folder_id: value.folder_id === "root" ? null : parseInt(value.folder_id, 10),
+          folder_id:
+            value.folder_id === "root" ? null : parseInt(value.folder_id, 10),
         };
 
         if (mode === "create") {
-          createSet(
-            payload,
-            {
-              onSuccess: () => {
-                toast.success("Set created");
-                onClose();
-              },
-              onError: (error) =>
-                toast.error(
-                  `Failed to create set: ${error.message || "internal server error"}`
-                ),
-            }
-          );
+          createSet(payload, {
+            onSuccess: () => {
+              toast.success("Set created");
+              onClose();
+            },
+            onError: (error) => handleError(value, error),
+          });
         } else if (mode === "update" && setId) {
           updateSet(
             {
@@ -82,10 +91,7 @@ export function useSetForm({
                 toast.success("Set updated");
                 onClose();
               },
-              onError: (error) =>
-                toast.error(
-                  `Failed to update set: ${error.message || "internal server error"}`
-                ),
+              onError: (error) => handleError(value, error),
             }
           );
         }

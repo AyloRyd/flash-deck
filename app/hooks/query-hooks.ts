@@ -1,10 +1,10 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { postgrest } from "~/lib/postgrest";
+import { postgrest, pgRErr, type PgRError } from "~/lib/postgrest";
 import { queryKeys } from "./keys";
 import type { Folder, Set, Card, Progress } from "~/lib/types";
 
 export const folderQueryOptions = (folderId: number) =>
-  queryOptions({
+  queryOptions<Folder, PgRError>({
     queryKey: queryKeys.folder(folderId),
     queryFn: async () => {
       const { data, error } = await postgrest
@@ -12,7 +12,8 @@ export const folderQueryOptions = (folderId: number) =>
         .select("*")
         .eq("folder_id", folderId)
         .single();
-      if (error) throw new Error(error.message);
+
+      if (error) throw pgRErr(error);
       return data as Folder;
     },
     enabled: !!folderId,
@@ -30,7 +31,7 @@ export interface FolderExtended extends Folder {
 }
 
 export const useFolders = (rootOnly?: boolean) => {
-  return useQuery({
+  return useQuery<FolderExtended[], PgRError>({
     queryKey: [...queryKeys.folders, rootOnly],
     queryFn: async () => {
       let query = postgrest
@@ -49,8 +50,8 @@ export const useFolders = (rootOnly?: boolean) => {
       }
 
       const { data, error } = await query;
-      if (error) throw new Error(error.message);
 
+      if (error) throw pgRErr(error);
       return data.map((item: any) => ({
         ...item,
         sets_count: item.sets[0].count,
@@ -61,7 +62,7 @@ export const useFolders = (rootOnly?: boolean) => {
 };
 
 export const useFolderContents = (folderId: number) => {
-  return useQuery({
+  return useQuery<{ folders: FolderExtended[]; sets: Set[] }, PgRError>({
     queryKey: queryKeys.folderContents(folderId),
     queryFn: async () => {
       const [foldersResult, setsResult] = await Promise.all([
@@ -77,8 +78,8 @@ export const useFolderContents = (folderId: number) => {
           .order("set_name"),
       ]);
 
-      if (foldersResult.error) throw new Error(foldersResult.error.message);
-      if (setsResult.error) throw new Error(setsResult.error.message);
+      if (foldersResult.error) throw pgRErr(foldersResult.error);
+      if (setsResult.error) throw pgRErr(setsResult.error);
 
       const folders = foldersResult.data.map((item: any) => ({
         ...item,
@@ -96,7 +97,7 @@ export const useFolderContents = (folderId: number) => {
 };
 
 export const useSets = (folderId?: number) => {
-  return useQuery({
+  return useQuery<Set[], PgRError>({
     queryKey: queryKeys.sets(folderId),
     queryFn: async () => {
       let query = postgrest.from("sets").select("*").order("set_name");
@@ -107,14 +108,14 @@ export const useSets = (folderId?: number) => {
 
       const { data, error } = await query;
 
-      if (error) throw new Error(error.message);
+      if (error) throw pgRErr(error);
       return data as Set[];
     },
   });
 };
 
 export const useSet = (setId: number) => {
-  return useQuery({
+  return useQuery<Set, PgRError>({
     queryKey: queryKeys.set(setId),
     queryFn: async () => {
       const { data, error } = await postgrest
@@ -123,7 +124,7 @@ export const useSet = (setId: number) => {
         .eq("set_id", setId)
         .single();
 
-      if (error) throw new Error(error.message);
+      if (error) throw pgRErr(error);
       return data as Set;
     },
     enabled: !!setId,
@@ -131,7 +132,7 @@ export const useSet = (setId: number) => {
 };
 
 export const useCards = (setId: number) => {
-  return useQuery({
+  return useQuery<Card[], PgRError>({
     queryKey: queryKeys.cards(setId),
     queryFn: async () => {
       const { data, error } = await postgrest
@@ -140,7 +141,7 @@ export const useCards = (setId: number) => {
         .eq("set_id", setId)
         .order("card_id");
 
-      if (error) throw new Error(error.message);
+      if (error) throw pgRErr(error);
       return data as Card[];
     },
     enabled: !!setId,
@@ -148,7 +149,7 @@ export const useCards = (setId: number) => {
 };
 
 export const useProgress = (userId?: string) => {
-  return useQuery({
+  return useQuery<Progress[], PgRError>({
     queryKey: queryKeys.progress(userId),
     queryFn: async () => {
       let query = postgrest.from("progress").select("*");
@@ -159,14 +160,14 @@ export const useProgress = (userId?: string) => {
 
       const { data, error } = await query;
 
-      if (error) throw new Error(error.message);
+      if (error) throw pgRErr(error);
       return data as Progress[];
     },
   });
 };
 
 export const usePublicSets = () => {
-  return useQuery({
+  return useQuery<Set[], PgRError>({
     queryKey: queryKeys.publicSets,
     queryFn: async () => {
       const { data, error } = await postgrest
@@ -175,14 +176,14 @@ export const usePublicSets = () => {
         .eq("is_public", true)
         .order("creation_date", { ascending: false });
 
-      if (error) throw new Error(error.message);
+      if (error) throw pgRErr(error);
       return data as Set[];
     },
   });
 };
 
 export const useStudyQueue = (setId: number, limit?: number) => {
-  return useQuery({
+  return useQuery<Card[], PgRError>({
     queryKey: queryKeys.studyQueue(setId),
     queryFn: async () => {
       const { data, error } = await postgrest.rpc("get_study_queue", {
@@ -190,7 +191,7 @@ export const useStudyQueue = (setId: number, limit?: number) => {
         p_limit: limit,
       });
 
-      if (error) throw new Error(error.message);
+      if (error) throw pgRErr(error);
       return data as Card[];
     },
     enabled: !!setId,
@@ -198,7 +199,7 @@ export const useStudyQueue = (setId: number, limit?: number) => {
 };
 
 export const useSetMastery = (setId: number) => {
-  return useQuery({
+  return useQuery<number, PgRError>({
     queryKey: queryKeys.setMastery(setId),
     queryFn: async () => {
       const { data, error } = await postgrest
@@ -207,7 +208,7 @@ export const useSetMastery = (setId: number) => {
         .eq("set_id", setId)
         .single();
 
-      if (error) throw new Error(error.message);
+      if (error) throw pgRErr(error);
       return data.set_mastery as number;
     },
     enabled: !!setId,
@@ -215,7 +216,7 @@ export const useSetMastery = (setId: number) => {
 };
 
 export const useCardStatus = (cardId: number) => {
-  return useQuery({
+  return useQuery<string, PgRError>({
     queryKey: queryKeys.cardStatus(cardId),
     queryFn: async () => {
       const { data, error } = await postgrest
@@ -224,7 +225,7 @@ export const useCardStatus = (cardId: number) => {
         .eq("card_id", cardId)
         .single();
 
-      if (error) throw new Error(error.message);
+      if (error) throw pgRErr(error);
       return data.card_status as string;
     },
     enabled: !!cardId,

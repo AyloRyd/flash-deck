@@ -49,7 +49,7 @@ export function CardItem({ card }: CardItemProps) {
       )}
 
       <div className="flex gap-4">
-        <div className="flex-1 space-y-3 min-w-0 pt-6">
+        <div className="flex-1 space-y-3 min-w-0">
           <div>
             <div className="text-xs font-medium text-muted-foreground mb-1">
               Front

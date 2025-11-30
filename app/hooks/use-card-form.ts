@@ -70,7 +70,7 @@ export function useCardForm({
               },
               onError: (error) =>
                 toast.error(
-                  `Failed to create card: ${error.message || "internal server error"}`
+                  `Failed to create card. ${error.message || "Internal server error."}`
                 ),
             }
           );
@@ -87,7 +87,7 @@ export function useCardForm({
               },
               onError: (error) =>
                 toast.error(
-                  `Failed to update card: ${error.message || "internal server error"}`
+                  `Failed to update card. ${error.message || "Internal server error."}`
                 ),
             }
           );

@@ -51,7 +51,7 @@ export default function SetForm({
         form={form}
         name="set_name"
         label="Set name"
-        placeholder="e.g. French Vocabulary"
+        placeholder="e.g. French vocabulary"
       />
 
       <form.AppField name="folder_id">
