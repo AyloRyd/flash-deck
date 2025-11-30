@@ -36,13 +36,7 @@ export const useFolders = (rootOnly?: boolean) => {
     queryFn: async () => {
       let query = postgrest
         .from("folders")
-        .select(
-          `
-          *,
-          sets(count),
-          folders!parent_folder_id(count)
-        `
-        )
+        .select("*, folder_stats")
         .order("folder_name");
 
       if (rootOnly) {
@@ -52,10 +46,11 @@ export const useFolders = (rootOnly?: boolean) => {
       const { data, error } = await query;
 
       if (error) throw pgRErr(error);
+
       return data.map((item: any) => ({
         ...item,
-        sets_count: item.sets[0].count,
-        subfolders_count: item.folders[0].count,
+        sets_count: item.folder_stats.total_sets,
+        subfolders_count: item.folder_stats.total_subfolders,
       })) as FolderExtended[];
     },
   });
