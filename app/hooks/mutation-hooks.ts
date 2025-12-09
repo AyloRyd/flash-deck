@@ -149,6 +149,7 @@ export const useUpdateSet = () => {
       queryClient.invalidateQueries({ queryKey: ["sets"] });
       queryClient.invalidateQueries({ queryKey: queryKeys.set(data.set_id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.publicSets });
+      queryClient.invalidateQueries({ queryKey: queryKeys.folders });
       queryClient.invalidateQueries({ queryKey: ["folder-contents"] });
     },
   });
@@ -178,11 +179,7 @@ export const useDeleteSet = () => {
 export const useCreateCard = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    Card,
-    PgRError,
-    Omit<Card, "card_id" | "updated_at">
-  >({
+  return useMutation<Card, PgRError, Omit<Card, "card_id" | "updated_at">>({
     mutationFn: async (card) => {
       const { data, error } = await postgrest
         .from("cards")
