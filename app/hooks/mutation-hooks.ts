@@ -1,11 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { postgrest, pgRErr, type PgRError } from "~/lib/postgrest";
-import { queryKeys } from "./keys";
+import { invalidateKeys, queryKeys } from "./keys";
 import type { Folder, Set, Card, Progress } from "~/lib/types";
 
 export const useCreateFolder = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<
     Folder,
     PgRError,
@@ -22,20 +20,17 @@ export const useCreateFolder = () => {
       return data as Folder;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.folders });
-
-      if (data.parent_folder_id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.folderContents(data.parent_folder_id),
-        });
-      }
+      invalidateKeys([
+        queryKeys.folders,
+        data.parent_folder_id
+          ? queryKeys.folderContents(data.parent_folder_id)
+          : null,
+      ]);
     },
   });
 };
 
 export const useUpdateFolder = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<
     Folder,
     PgRError,
@@ -56,23 +51,18 @@ export const useUpdateFolder = () => {
       return data as Folder;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.folders });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.folder(data.folder_id),
-      });
-
-      if (data.parent_folder_id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.folderContents(data.parent_folder_id),
-        });
-      }
+      invalidateKeys([
+        queryKeys.folders,
+        queryKeys.folder(data.folder_id),
+        data.parent_folder_id
+          ? queryKeys.folderContents(data.parent_folder_id)
+          : null,
+      ]);
     },
   });
 };
 
 export const useDeleteFolder = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<void, PgRError, number>({
     mutationFn: async (folderId) => {
       const { error } = await postgrest
@@ -83,15 +73,15 @@ export const useDeleteFolder = () => {
       if (error) throw pgRErr(error);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.folders });
-      queryClient.invalidateQueries({ queryKey: ["folder-contents"] });
+      invalidateKeys([
+        queryKeys.folders, 
+        ["folder-contents"]
+      ]);
     },
   });
 };
 
 export const useCreateSet = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<
     Set,
     PgRError,
@@ -108,24 +98,16 @@ export const useCreateSet = () => {
       return data as Set;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["sets"] });
-
-      if (data.folder_id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.folderContents(data.folder_id),
-        });
-      }
-
-      if (data.is_public) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.publicSets });
-      }
+      invalidateKeys([
+        ["sets"],
+        data.folder_id ? queryKeys.folderContents(data.folder_id) : null,
+        data.is_public ? queryKeys.publicSets : null,
+      ]);
     },
   });
 };
 
 export const useUpdateSet = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<
     Set,
     PgRError,
@@ -146,18 +128,18 @@ export const useUpdateSet = () => {
       return data as Set;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["sets"] });
-      queryClient.invalidateQueries({ queryKey: queryKeys.set(data.set_id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.publicSets });
-      queryClient.invalidateQueries({ queryKey: queryKeys.folders });
-      queryClient.invalidateQueries({ queryKey: ["folder-contents"] });
+      invalidateKeys([
+        ["sets"],
+        queryKeys.set(data.set_id),
+        queryKeys.publicSets,
+        queryKeys.folders,
+        ["folder-contents"],
+      ]);
     },
   });
 };
 
 export const useDeleteSet = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<void, PgRError, number>({
     mutationFn: async (setId) => {
       const { error } = await postgrest
@@ -168,17 +150,17 @@ export const useDeleteSet = () => {
       if (error) throw pgRErr(error);
     },
     onSuccess: (_, setId) => {
-      queryClient.invalidateQueries({ queryKey: ["sets"] });
-      queryClient.invalidateQueries({ queryKey: queryKeys.set(setId) });
-      queryClient.invalidateQueries({ queryKey: ["folder-contents"] });
-      queryClient.invalidateQueries({ queryKey: queryKeys.publicSets });
+      invalidateKeys([
+        ["sets"],
+        queryKeys.set(setId),
+        ["folder-contents"],
+        queryKeys.publicSets,
+      ]);
     },
   });
 };
 
 export const useCreateCard = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<Card, PgRError, Omit<Card, "card_id" | "updated_at">>({
     mutationFn: async (card) => {
       const { data, error } = await postgrest
@@ -191,17 +173,15 @@ export const useCreateCard = () => {
       return data as Card;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cards(data.set_id) });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.studyQueue(data.set_id),
-      });
+      invalidateKeys([
+        queryKeys.cards(data.set_id),
+        queryKeys.studyQueue(data.set_id),
+      ]);
     },
   });
 };
 
 export const useUpdateCard = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<
     Card,
     PgRError,
@@ -222,14 +202,14 @@ export const useUpdateCard = () => {
       return data as Card;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cards(data.set_id) });
+      invalidateKeys([
+        queryKeys.cards(data.set_id)
+      ]);
     },
   });
 };
 
 export const useDeleteCard = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<
     { setId: number },
     PgRError,
@@ -245,18 +225,16 @@ export const useDeleteCard = () => {
       return { setId };
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cards(data.setId) });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.studyQueue(data.setId),
-      });
-      queryClient.invalidateQueries({ queryKey: ["progress"] });
+      invalidateKeys([
+        queryKeys.cards(data.setId),
+        queryKeys.studyQueue(data.setId),
+        ["progress"],
+      ]);
     },
   });
 };
 
 export const useUpdateProgress = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<
     Progress,
     PgRError,
@@ -276,17 +254,17 @@ export const useUpdateProgress = () => {
       return data as Progress;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["progress"] });
-      queryClient.invalidateQueries({ queryKey: ["study-queue"] });
-      queryClient.invalidateQueries({ queryKey: ["set-mastery"] });
-      queryClient.invalidateQueries({ queryKey: ["card-status"] });
+      invalidateKeys([
+        ["progress"],
+        ["study-queue"],
+        ["set-mastery"],
+        ["card-status"],
+      ]);
     },
   });
 };
 
 export const useClonePublicSet = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<unknown, PgRError, number>({
     mutationFn: async (sourceSetId) => {
       const { data, error } = await postgrest.rpc("clone_public_set", {
@@ -297,14 +275,14 @@ export const useClonePublicSet = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sets"] });
+      invalidateKeys([
+        ["sets"]
+      ]);
     },
   });
 };
 
 export const usePopulateGermanCourse = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<unknown, PgRError, void>({
     mutationFn: async () => {
       const { data, error } = await postgrest.rpc("populate_german_course");
@@ -313,15 +291,15 @@ export const usePopulateGermanCourse = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.folders });
-      queryClient.invalidateQueries({ queryKey: ["sets"] });
+      invalidateKeys([
+        queryKeys.folders, 
+        ["sets"]
+      ]);
     },
   });
 };
 
 export const usePopulateEnglishVerbs = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<unknown, PgRError, void>({
     mutationFn: async () => {
       const { data, error } = await postgrest.rpc("populate_english_verbs");
@@ -330,14 +308,14 @@ export const usePopulateEnglishVerbs = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sets"] });
+      invalidateKeys([
+        ["sets"]
+      ]);
     },
   });
 };
 
 export const useClearUserData = () => {
-  const queryClient = useQueryClient();
-
   return useMutation<unknown, PgRError, void>({
     mutationFn: async () => {
       const { data, error } = await postgrest.rpc("clear_user_data");
@@ -346,10 +324,12 @@ export const useClearUserData = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.folders });
-      queryClient.invalidateQueries({ queryKey: ["sets"] });
-      queryClient.invalidateQueries({ queryKey: ["cards"] });
-      queryClient.invalidateQueries({ queryKey: ["progress"] });
+      invalidateKeys([
+        queryKeys.folders,
+        ["sets"],
+        ["cards"],
+        ["progress"],
+      ]);
     },
   });
 };

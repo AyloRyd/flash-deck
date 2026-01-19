@@ -1,11 +1,11 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { postgrest, pgRErr, type PgRError } from "~/lib/postgrest";
 import { queryKeys } from "./keys";
-import type { Folder, Set, Card, Progress } from "~/lib/types";
+import type { Folder, Set, Card, Progress, FolderExtended } from "~/lib/types";
 
-export const folderQueryOptions = (folderId: number) =>
-  queryOptions<Folder, PgRError>({
-    queryKey: queryKeys.folder(folderId),
+export const useFolder = (folderId: number | null) => {
+  return useQuery({
+    queryKey: queryKeys.folder(folderId!),
     queryFn: async () => {
       const { data, error } = await postgrest
         .from("folders")
@@ -18,17 +18,7 @@ export const folderQueryOptions = (folderId: number) =>
     },
     enabled: !!folderId,
   });
-
-export const useFolder = (folderId: number | null) => {
-  return useQuery({
-    ...folderQueryOptions(folderId!),
-  });
 };
-
-export interface FolderExtended extends Folder {
-  sets_count: number;
-  subfolders_count: number;
-}
 
 export const useFolders = (rootOnly?: boolean) => {
   return useQuery<FolderExtended[], PgRError>({

@@ -18,47 +18,26 @@ type CustomMessages = Partial<Record<`code${HttpCode}`, string>>;
 
 const PG_TO_HTTP: Record<string, HttpCode> = {
   // Connection errors
-  "08000": "503",
-  "08003": "503",
-  "08006": "503",
-  "08001": "503",
-  "08004": "503",
-  "08007": "503",
-  "08P01": "503",
-
+  "08000": "503", "08003": "503", "08006": "503", "08001": "503", 
+  "08004": "503", "08007": "503", "08P01": "503",
   // Constraint violations
-  "23503": "409",
-  "23505": "409",
-
+  "23503": "409", "23505": "409",
   // Transaction errors
   "25006": "405",
-
   // Auth errors
-  "28000": "403",
-  "28P01": "403",
-
+  "28000": "403", "28P01": "403",
   // Config errors
   "53400": "500",
-
   // Insufficient resources
-  "53000": "503",
-  "53100": "503",
-  "53200": "503",
-  "53300": "503",
-
+  "53000": "503", "53100": "503", "53200": "503", "53300": "503",
   // Undefined function/table
-  "42883": "404",
-  "42P01": "404",
-
+  "42883": "404", "42P01": "404",
   // Privileges
   "42501": "403",
-
   // PL/pgSQL errors
   P0001: "400",
-
   // Invalid grantor/role
-  "0L000": "403",
-  "0P000": "403",
+  "0L000": "403", "0P000": "403",
 };
 
 const PG_PATTERN_TO_HTTP: Array<{ pattern: RegExp; code: HttpCode }> = [
@@ -90,8 +69,7 @@ const DEFAULT_MESSAGES: Record<HttpCode, string> = {
   "403": "You don't have permission to access this resource.",
   "404": "The requested resource was not found.",
   "405": "This operation is not allowed.",
-  "409":
-    "This action conflicts with existing data. Please check for duplicates.",
+  "409": "This action conflicts with existing data. Please check for duplicates.",
   "500": "An unexpected server error occurred. Please try again later.",
   "503": "Service temporarily unavailable. Please try again later.",
 };
@@ -113,19 +91,12 @@ function getHttpCode(pgCode: string): HttpCode {
 export interface PgRError {
   code: HttpCode;
   message: string;
-  details: string;
-  hint: string;
+  details?: string;
+  hint?: string;
 }
 
 export function pgRErr(
-  error:
-    | PostgrestError
-    | {
-        code: string;
-        message: string;
-        details?: string;
-        hint?: string;
-      },
+  error: PostgrestError,
   customMessages?: CustomMessages
 ): PgRError {
   const httpCode = getHttpCode(error.code);
@@ -146,7 +117,7 @@ export function pgRErr(
   return {
     code: httpCode,
     message,
-    details: error.details || "",
-    hint: error.hint || "",
+    details: error.details || undefined,
+    hint: error.hint || undefined,
   };
 }

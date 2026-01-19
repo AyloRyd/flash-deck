@@ -6,6 +6,11 @@ export type Folder = {
   updated_at: string;
 };
 
+export interface FolderExtended extends Folder {
+  sets_count: number;
+  subfolders_count: number;
+}
+
 export type Set = {
   set_id: number;
   user_id: string;
