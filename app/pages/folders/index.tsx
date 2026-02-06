@@ -1,6 +1,7 @@
 import { useFolders } from "~/hooks/query-hooks";
 import { FolderCard } from "./FolderCard";
 import { Card, CardHeader, CardContent } from "~/components/ui/card";
+import { FolderBreadcrumbs } from "~/pages/folders/FolderBreadcrumbs";
 import { Link } from "react-router";
 
 export default function FoldersGrid() {
@@ -8,37 +9,49 @@ export default function FoldersGrid() {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="space-y-4">
+        <FolderBreadcrumbs path={[]} />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <FolderCardSkeleton key={i} />
         ))}
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12 text-destructive">
-        Error loading folders: {error.message}
+      <div className="space-y-4">
+        <FolderBreadcrumbs path={[]} />
+        <div className="text-center py-12 text-destructive">
+          Error loading folders: {error.message}
+        </div>
       </div>
     );
   }
 
   if (!folders || folders.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        No folders yet. Create new folder to get started!
+      <div className="space-y-4">
+        <FolderBreadcrumbs path={[]} />
+        <div className="text-center py-12 text-muted-foreground">
+          No folders yet. Create new folder to get started!
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="space-y-4">
+      <FolderBreadcrumbs path={[]} />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {folders.map((folder) => (
         <Link to={`/folders/${folder.folder_id}`} key={folder.folder_id}>
           <FolderCard folder={folder} />
         </Link>
       ))}
+      </div>
     </div>
   );
 }

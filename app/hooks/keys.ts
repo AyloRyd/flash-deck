@@ -2,7 +2,8 @@ import { queryClient } from "~/root";
 
 export const queryKeys = {
   folders: ["folders"] as const,
-  folder: (id: number) => ["folders", id] as const, 
+  folder: (id: number) => ["folders", id] as const,
+  folderPath: (id: number) => ["folder-path", id] as const,
   folderContents: (id: number) => ["folder-contents", id] as const,
   sets: (folderId?: number) => folderId ? ["sets", folderId] : (["sets"] as const),
   set: (setId: number) => ["sets", setId] as const,

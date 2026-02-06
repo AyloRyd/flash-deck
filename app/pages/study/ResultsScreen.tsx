@@ -26,7 +26,7 @@ export function ResultsScreen({
       </div>
       <Button size="lg" onClick={onBack}>
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Set
+        Back to set
       </Button>
     </div>
   );

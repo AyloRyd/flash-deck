@@ -38,7 +38,7 @@ export function Study({ mode }: StudyProps) {
         <p className="text-muted-foreground">No cards to study</p>
         <Button onClick={handleExit}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Set
+          Back to set
         </Button>
       </div>
     );
@@ -60,7 +60,7 @@ export function Study({ mode }: StudyProps) {
       <div className="flex justify-center mb-6">
         <Button variant="ghost" onClick={handleExit}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Set
+          Back to set
         </Button>
       </div>
 

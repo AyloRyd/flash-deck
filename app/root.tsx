@@ -13,6 +13,7 @@ import "./app.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { Toaster } from "sonner";
+import { ThemeSync } from "~/components/ThemeSync";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -31,16 +32,34 @@ export function meta({}: Route.MetaArgs) {
   return [{ title: "FlashDeck | Master your knowledge" }];
 }
 
+const themeScript = `
+(function(){
+  try {
+    var s = localStorage.getItem('flash-deck-theme');
+    var isDark = true;
+    if (s) {
+      var j = JSON.parse(s);
+      if (j.state && j.state.theme === 'light') isDark = false;
+    }
+    document.documentElement.classList.toggle('dark', isDark);
+  } catch (e) {
+    document.documentElement.classList.add('dark');
+  }
+})();
+`;
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Meta />
         <Links />
       </head>
       <body>
+        <ThemeSync />
         {children}
         <Toaster position="top-center" />
         <ScrollRestoration />

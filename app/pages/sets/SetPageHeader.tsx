@@ -1,5 +1,7 @@
 import { Edit, BookOpen, TrendingUp, Library } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import { FolderBreadcrumbs } from "~/pages/folders/FolderBreadcrumbs";
+import { useFolderPath } from "~/hooks/query-hooks";
 import type { Set } from "~/lib/types";
 import SetDialog from "./SetDialog";
 
@@ -14,9 +16,16 @@ export function SetPageHeader({
   cardsCount,
   masteryPercentage,
 }: SetPageHeaderProps) {
+  const { data: folderPath = [] } = useFolderPath(currentSet.folder_id ?? null);
+
   return (
     <header className="space-y-6">
       <div className="flex flex-col justify-center items-center gap-6 px-4">
+        <FolderBreadcrumbs
+          path={folderPath}
+          setLabel={currentSet.set_name}
+          setId={currentSet.set_id}
+        />
         <div className="flex items-center gap-3 min-w-0 max-w-full">
           <Library className="w-6 h-6 md:w-10 md:h-10 text-primary shrink-0" />
           <h1 className="text-md md:text-xl font-bold text-center truncate">

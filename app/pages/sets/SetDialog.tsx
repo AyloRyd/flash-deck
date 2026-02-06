@@ -38,7 +38,7 @@ export default function SetDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent
         onOpenAutoFocus={(e) => e.preventDefault()}
-        className="rounded-xl border shadow-lg max-w-lg backdrop-blur-sm bg-white/95"
+        className="rounded-xl border shadow-lg max-w-lg backdrop-blur-sm bg-white/95 dark:bg-background"
       >
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">

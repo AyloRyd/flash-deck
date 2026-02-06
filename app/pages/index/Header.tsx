@@ -1,6 +1,9 @@
 import { User } from "@auth0/auth0-react";
+import { Moon, Sun } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 import { SignOutButton } from "../index/SignOutButton";
+import { useThemeStore } from "~/stores/theme-store";
 import { Link } from "react-router";
 
 interface HeaderProps {
@@ -8,8 +11,10 @@ interface HeaderProps {
 }
 
 export function Header({ user }: HeaderProps) {
+  const { theme, toggleTheme } = useThemeStore();
+
   return (
-    <header className="border-b bg-white">
+    <header className="border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/sets" className="flex items-center gap-3 min-w-0">
           <Avatar className="h-10 w-10 border-2 border-slate-200 shrink-0">
@@ -31,7 +36,19 @@ export function Header({ user }: HeaderProps) {
           </div>
         </Link>
 
-        <div className="shrink-0 ml-4">
+        <div className="shrink-0 ml-4 flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
           <SignOutButton />
         </div>
       </div>

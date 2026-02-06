@@ -23,7 +23,7 @@ export function SetCardOptions({ set }: { set: Set }) {
             e.stopPropagation();
             setOpen((prev) => !prev);
           }}
-          className="p-2 hover:bg-slate-100 rounded-md transition-colors"
+          className="cursor-pointer p-2 hover:bg-secondary rounded-md transition-colors"
           aria-label="More options"
         >
           <MoreVertical className="w-4 h-4 text-muted-foreground" />
@@ -35,13 +35,13 @@ export function SetCardOptions({ set }: { set: Set }) {
           e.stopPropagation();
         }}
         align="end"
-        className="w-48 p-1 bg-white border shadow-lg rounded-lg"
+        className="w-48 p-1 bg-background border shadow-lg rounded-lg"
       >
         <SetDialog
           mode="update"
           set={set}
           trigger={
-            <button className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 flex items-center gap-2 rounded-md transition-colors">
+            <button className="cursor-pointer w-full text-left px-3 py-2 text-sm hover:bg-secondary flex items-center gap-2 rounded-md transition-colors">
               <Edit className="w-4 h-4 text-primary" /> Edit
             </button>
           }

@@ -20,6 +20,29 @@ export const useFolder = (folderId: number | null) => {
   });
 };
 
+export const useFolderPath = (folderId: number | null) => {
+  return useQuery<Folder[], PgRError>({
+    queryKey: queryKeys.folderPath(folderId!),
+    queryFn: async () => {
+      const path: Folder[] = [];
+      let currentId: number | null = folderId;
+      while (currentId != null) {
+        const { data, error } = await postgrest
+          .from("folders")
+          .select("*")
+          .eq("folder_id", currentId)
+          .single();
+        if (error) throw pgRErr(error);
+        path.push(data as Folder);
+        currentId = (data as Folder).parent_folder_id;
+      }
+      path.reverse();
+      return path;
+    },
+    enabled: !!folderId,
+  });
+};
+
 export const useFolders = (rootOnly?: boolean) => {
   return useQuery<FolderExtended[], PgRError>({
     queryKey: [...queryKeys.folders, rootOnly],
